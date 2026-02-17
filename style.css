@@ -1,0 +1,85 @@
+/* Reset Global */
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "JetBrainsMono Nerd Font";
+  font-weight: bold;
+  font-size: 14px;
+  min-height: 0;
+}
+
+/* A barra em si (Fundo transparente para dar o efeito flutuante) */
+window#waybar {
+  background: transparent;
+  color: #cdd6f4;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
+
+/* Tooltips */
+tooltip {
+  background: #1e1e2e;
+  border-radius: 10px;
+  border: 1px solid #cba6f7;
+}
+
+/* Estilo Geral dos Módulos (As "ilhas") */
+#workspaces,
+#window,
+#clock,
+#pulseaudio,
+#battery,
+#memory,
+#cpu,
+#tray {
+  background-color: #1e1e2e;
+  padding: 0px 15px;
+  margin: 5px 4px; /* Espaço entre os módulos */
+  border-radius: 10px; /* Cantos arredondados */
+  border: 2px solid #11111b; /* Borda sutil */
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.2); /* Sombra para profundidade */
+}
+
+/* Workspaces - Estilização específica */
+#workspaces button {
+  padding: 0 5px;
+  background-color: transparent;
+  color: #cdd6f4;
+  border-radius: 5px;
+}
+
+#workspaces button:hover {
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: inherit;
+  text-shadow: inherit;
+}
+
+#workspaces button.active {
+  color: #1e1e2e;
+  background-color: #cba6f7; /* Cor de destaque (Roxo) */
+  border-radius: 10px;
+}
+
+/* Cores específicas para diferenciar os módulos da direita */
+#clock {
+  color: #cba6f7;
+}
+
+#pulseaudio {
+  color: #89b4fa; /* Azul */
+}
+
+#memory {
+  color: #f9e2af; /* Amarelo */
+}
+
+#cpu {
+  color: #f38ba8; /* Vermelho */
+}
+
+#window {
+  border-radius: 10px;
+  background-color: #313244; /* Um pouco mais claro que o fundo normal */
+}
