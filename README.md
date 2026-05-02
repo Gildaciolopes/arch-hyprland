@@ -1,165 +1,306 @@
-# arch-hyprland - meu rice do Arch + Hyprland
+# arch-hyprland
 
-Este repositório guarda as minhas configurações (`dotfiles`) para Arch Linux + Hyprland. O objetivo é permitir que você replique o meu ambiente (terminais, atalhos, aparências, fontes e utilitários) rápida e seguramente.
+Rice do Arch Linux + Hyprland. Este guia reproduz o ambiente do zero, do ISO até o desktop pronto.
 
-**Aviso:** este README contém instruções avançadas que assumem familiaridade com o processo de instalação do Arch Linux e permissões de administrador. Use com cuidado e adapte caminhos/nomes conforme seu hardware.
+**Preview rápido do que você vai ter:**
 
-**Sumário rápido**
+- Hyprland com bordas Catppuccin Mauve, blur e animações suaves
+- Waybar com módulos flutuantes (ilha style)
+- Terminal Kitty com fundo transparente e cor roxa
+- Prompt de duas linhas com Starship (Arch icon + git status)
+- awww como daemon de wallpaper com transição animada
+- tty-clock, cmatrix e cava abrindo automaticamente no login
 
-- **Requisitos:** instalação do Arch Linux com acesso à internet
-- **Instalação com:** `archinstall` (perfil automático + perfil customizável)
-- **Principais pacotes:** `hyprland`, `kitty`, `waybar`, `wofi`, `swww`, `dunst`, `grim`, `slurp`, `wl-clipboard`, `xdg-desktop-portal`, `xdg-desktop-portal-hyprland` (AUR)
-- **Configuração:** copie os arquivos em `~/.config/` e ajuste `hyprland.conf` conforme necessário
+---
 
-**O que tem neste repositório**
+## Requisitos
 
-- `.config/hypr/hyprland.conf` — configuração principal do Hyprland (monitor, binds, autostart, aparência)
-- `.config/kitty/kitty.conf` — tema/opacidade do terminal
+- ISO do Arch Linux (boot via USB)
+- Placa NVIDIA? Leia a seção de drivers antes de reiniciar
+- Conexão com internet
 
-## Como usar
+---
 
-1. Preparar a instalação do Arch
-   - Inicialize pelo ISO do Arch e conecte à internet.
-   - Instale o `archinstall` (se não estiver no ISO atual):
+## 1. Instalar o Arch Linux
 
-```bash
-pacman -Sy archinstall
-```
-
-2. Instalação automatizada (exemplo com `archinstall`)
-   - Crie um perfil JSON mínimo (exemplo `profile.json`) ou use a opção interativa.
-   - Exemplo mínimo de comando interativo:
+No boot pelo ISO, conecte à internet e rode:
 
 ```bash
 archinstall
-# Siga as perguntas: escolha idioma, timezone, particionamento (manual ou guiado), bootloader,
-# criar usuário, locale e selecione "desktop" (ou instale sem desktop e adicione pacotes depois).
 ```
 
-    - Para um perfil automatizado, crie `profile.json` e rode:
+Configurações recomendadas no `archinstall`:
+
+- **Disk:** particionamento guiado, ext4, separar `/home`
+- **Bootloader:** GRUB
+- **Profile:** minimal (sem desktop — vamos instalar o Hyprland manualmente)
+- **Audio:** pipewire
+- **Network:** NetworkManager
+- **Locale:** pt_BR.UTF-8 (ou o seu)
+- **Timezone:** America/Sao_Paulo (ou o seu)
+- Crie um usuário com permissão sudo
+
+---
+
+## 2. Primeira inicialização — pacotes base
+
+Após o reboot, logue no TTY e instale tudo de uma vez:
 
 ```bash
-archinstall --config profile.json
+sudo pacman -Syu
+
+# Base do Wayland + Hyprland
+sudo pacman -S hyprland waybar kitty wofi dunst grim slurp wl-clipboard \
+  cliphist xdg-desktop-portal xdg-desktop-portal-hyprland \
+  polkit-kde-agent network-manager-applet networkmanager \
+  brightnessctl playerctl pipewire pipewire-alsa pipewire-pulse \
+  pipewire-jack wireplumber pavucontrol
+
+# GTK / Qt theming
+sudo pacman -S arc-gtk-theme nwg-look nwg-bar kvantum kvantum-qt5 qt5ct qt6ct
+
+# Fontes
+sudo pacman -S ttf-jetbrains-mono-nerd noto-fonts noto-fonts-emoji ttf-dejavu ttf-liberation
+
+# Terminal extras (abrem automaticamente no login)
+sudo pacman -S tty-clock cmatrix cava pipes.sh fastfetch starship fzf tree jq
+
+# Ferramentas de sistema
+sudo pacman -S btop htop earlyoom ufw zip unzip unrar p7zip ffmpeg \
+  gst-libav gst-plugins-bad gst-plugins-good gst-plugins-ugly gst-plugin-pipewire
+
+# Bluetooth
+sudo pacman -S blueman bluez bluez-utils
+
+# Multilib (Steam, Wine etc.) — ativar em /etc/pacman.conf se necessário
+sudo pacman -S lib32-nvidia-utils  # só se tiver NVIDIA
 ```
 
-3. Pacotes recomendados (após chroot/primeira inicialização)
-   - Pacotes essenciais Wayland + Hyprland:
+---
+
+## 3. Instalar o yay (AUR helper)
 
 ```bash
-sudo pacman -Syu hyprland waybar kitty wofi wl-clipboard grim slurp swaybg swayidle swaylock cliphist dunst network-manager-applet nm-connection-editor
+sudo pacman -S --needed base-devel git
+git clone https://aur.archlinux.org/yay.git
+cd yay && makepkg -si
+cd .. && rm -rf yay
 ```
 
-    - Outros utilitários úteis:
+### Pacotes AUR
 
 ```bash
-sudo pacman -S xdg-desktop-portal xdg-desktop-portal-gtk polkit-kde-agent-1 brightnessctl playerctl cava cmatrix
+yay -S awww hyprshot ttf-apple-emoji
 ```
 
-    - AUR (alguns podem estar em AUR, use `paru`/`yay`):
+> `awww` é o daemon de wallpaper usado aqui (tem suporte a transições animadas).
+
+---
+
+## 4. Driver NVIDIA
 
 ```bash
-# Exemplo: instalar xdg-desktop-portal-hyprland via AUR
-yay -S xdg-desktop-portal-hyprland swww
+sudo pacman -S nvidia-open-dkms linux-headers linux-lts-headers dkms libva-nvidia-driver
 ```
 
-Observação: confirme se `swww` e `xdg-desktop-portal-hyprland` estão disponíveis nos repositórios ou AUR na data em que for instalar.
-
-4. Portais e captura de tela
-
-- Instale `xdg-desktop-portal` e um backend compatível (`xdg-desktop-portal-hyprland`) para integração com screenshots e diálogos do Flatpak.
-- Use `grim` + `slurp` para capturas no Hyprland. Exemplo de bind já presente no `hyprland.conf`.
-
-5. Fontes e ícones recomendados
-
-- JetBrainsMono Nerd Font (ou outra Nerd Font) — terminal e ícones de status
-- Inter / Noto Sans — interface
-- Material Icons / Font Awesome — ícones de aplicativos
-
-Instalação rápida de fontes (exemplo):
+Adicione `nvidia_drm.modeset=1` nos parâmetros do kernel (`/etc/default/grub`) e regenere:
 
 ```bash
-sudo pacman -S ttf-jetbrains-mono ttf-dejavu noto-fonts
-# Para Nerd Fonts via AUR
-yay -S ttf-jetbrains-mono-nerd
+sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-6. Como aplicar estes dotfiles (passo a passo)
-   - Faça backup das suas configs atuais.
-   - Copie os arquivos do repositório para `~/.config`:
+> Se estiver usando kernel LTS como fallback, instale também `linux-lts` e `linux-lts-headers`.
+
+---
+
+## 5. Otimizações do sistema
+
+### GRUB — boot silencioso
+
+Edite `/etc/default/grub`:
+
+```
+GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet"
+GRUB_CMDLINE_LINUX="zswap.enabled=0 rootfstype=ext4"
+```
+
+Aplique:
 
 ```bash
-mkdir -p ~/.config/hypr ~/.config/kitty
-cp -r .config/hypr/hyprland.conf ~/.config/hypr/hyprland.conf
-cp -r .config/kitty/kitty.conf ~/.config/kitty/kitty.conf
+sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-    - Garanta permissões e reinicie o Hyprland (logout/login) ou reinicie a sessão Wayland.
+> `zswap.enabled=0` desativa o cache de swap comprimido do kernel (desnecessário com swapfile simples).
 
-## Trechos importantes das suas configurações
+### Pacman — downloads paralelos
 
-Vou incluir aqui os trechos principais detectados nos seus arquivos para facilitar a compreensão.
-
-Monitor
+Edite `/etc/pacman.conf` e descomente/adicione:
 
 ```
-monitor = eDP-1,2560x1600@60,0x0,1
+ParallelDownloads = 15
+ILoveCandy
+Color
 ```
 
-Terminal e programas padrão
+### earlyoom — mata processos antes do sistema travar
 
-```
-$terminal = kitty
-$fileManager = dolphin
-$menu = wofi --show drun --allow-images
+```bash
+sudo systemctl enable --now earlyoom
 ```
 
-Autostart (exemplos já configurados)
+Edite `/etc/default/earlyoom`:
 
 ```
-exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDC_CURRENT_DESKTOP
-exec-once = systemctl --user import-enviroment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-exec-once = waybar
-exec-once = swww-daemon & swww img Imagens/Wallpapers/Meptl.png
-exec-once = dunst
-exec-once = nm-applet --indicator
-exec-once = wl-paste --type text --watch cliphist store
-exec-once = /usr/lib/polkit-kde-authentication-agent-1
+EARLYOOM_ARGS="-r 3600 -n --avoid '(^|/)(init|systemd|Xorg|sshd)$'"
 ```
 
-Aparência e comportamento (resumo)
+### fstrim — saúde do SSD
 
-- Gaps internos/externos: `gaps_in = 5`, `gaps_out = 8`
-- Bordas: `border_size = 2` com cores usando `rgba( cba6f7ee )`
-- Layout padrão: `dwindle` com `pseudotile = true`
-- Decoração: `rounding = 10`, opacidades `active_opacity = 1.0`, `inactive_opacity = 0.8`
-- Blur ativado (`enabled = true`) com `size = 3`
-
-Keybinds relevantes
-
-```
-bind = $mainMod, Return, exec, $terminal
-bind = $mainMod, B, exec, zen-browser
-bind = $mainMod, G, exec, code
-bind = $mainMod, Print, exec, grim -g "$(slurp)" - | tee ~/Imagens/screenshot.png | wl-copy
+```bash
+sudo systemctl enable fstrim.timer
 ```
 
-Kitty (tema mínimo detectado)
+### Serviços para habilitar
 
-```
-color5  #cba6f7
-color13 #cba6f7
-background_opacity 0.8
-cursor #cba6f7
+```bash
+sudo systemctl enable NetworkManager bluetooth docker earlyoom fstrim.timer
 ```
 
-## Personalize antes de usar
+---
 
-- Ajuste `monitor` caso seu monitor tenha outro identificador ou resolução.
-- Revise `exec-once` para remover aplicativos que você não quer iniciar.
-- Verifique variáveis `env` (ex.: `GTK_THEME`, `QT_QPA_PLATFORMTHEME`) para combinar com seu tema.
+## 6. Aplicar os dotfiles
 
-## Problemas comuns e soluções rápidas
+```bash
+# Clone o repo
+git clone https://github.com/seu-usuario/arch-hyprland.git
+cd arch-hyprland
 
-- Nada aparece na sessão Wayland: verifique `sddm`/`gdm` ou inicie `Hyprland` manualmente (`Hyprland` no tty).
-- Portal não funciona para screenshots/flatpaks: instale `xdg-desktop-portal-hyprland` e reinicie o serviço `systemctl --user restart xdg-desktop-portal`.
-- Atalhos não funcionam: confira se o `mainMod` está definido (`$mainMod = SUPER`).
+# Copie tudo para ~/.config
+cp -r .config/* ~/.config/
+```
+
+Ou link simbólico por arquivo se preferir:
+
+```bash
+ln -sf $(pwd)/.config/hypr/hyprland.conf ~/.config/hypr/hyprland.conf
+ln -sf $(pwd)/.config/waybar/config.jsonc ~/.config/waybar/config.jsonc
+# etc...
+```
+
+---
+
+## 7. Configurar o bash
+
+Adicione ao final do `~/.bashrc`:
+
+```bash
+alias hypr='dbus-run-session Hyprland'
+
+export JAVA_HOME=/usr/lib/jvm/default
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools
+
+fastfetch
+eval "$(starship init bash)"
+```
+
+---
+
+## 8. GTK — tema Arc-Dark
+
+Após copiar os dotfiles, rode o nwg-look para aplicar o tema:
+
+```bash
+nwg-look
+```
+
+Ou edite manualmente `~/.config/gtk-3.0/settings.ini` e `~/.config/gtk-4.0/settings.ini`:
+
+```ini
+[Settings]
+gtk-theme-name=Arc-Dark
+gtk-icon-theme-name=Adwaita
+gtk-font-name=Adwaita Sans 11
+gtk-cursor-theme-name=default
+gtk-cursor-theme-size=24
+gtk-application-prefer-dark-theme=0
+```
+
+---
+
+## 9. Wallpaper
+
+Coloque seu wallpaper em `~/Imagens/Wallpapers/`. O autostart no `hyprland.conf` espera:
+
+```
+~/Imagens/Wallpapers/Meptl.png
+```
+
+Para mudar, edite a linha no `hyprland.conf`:
+
+```
+exec-once = sleep 1 && awww img ~/Imagens/Wallpapers/SEU_WALLPAPER.png \
+  --transition-type grow --transition-duration 1.5 --transition-fps 60 \
+  --transition-pos center --transition-bezier 0.25,1,0.25,1
+```
+
+---
+
+## 10. Iniciar o Hyprland
+
+No TTY:
+
+```bash
+hypr
+# (alias para: dbus-run-session Hyprland)
+```
+
+Se tiver display manager (sddm, gdm), selecione "Hyprland" na sessão.
+
+---
+
+## Atalhos principais
+
+| Tecla                      | Ação                                                       |
+| -------------------------- | ---------------------------------------------------------- |
+| `SUPER + Return`           | Kitty                                                      |
+| `SUPER + A`                | Wofi (launcher)                                            |
+| `SUPER + Space`            | Dolphin (files)                                            |
+| `SUPER + Q`                | Fechar janela                                              |
+| `SUPER + F`                | Fullscreen                                                 |
+| `SUPER + S`                | Toggle floating                                            |
+| `SUPER + J`                | Toggle split                                               |
+| `SUPER + Escape`           | Reiniciar Waybar                                           |
+| `SUPER + B`                | Zen Browser                                                |
+| `SUPER + G`                | VS Code                                                    |
+| `Print`                    | Screenshot da tela toda                                    |
+| `SUPER + Print`            | Screenshot de região → salva em `~/Imagens/screenshot.png` |
+| `SUPER + 1..0`             | Trocar workspace                                           |
+| `SUPER + SHIFT + 1..0`     | Mover janela para workspace                                |
+| `SUPER + mouse drag`       | Mover janela                                               |
+| `SUPER + ALT + mouse drag` | Redimensionar janela                                       |
+
+---
+
+## Problemas comuns
+
+**Hyprland não inicia / tela preta com NVIDIA**  
+Confirme que `nvidia_drm.modeset=1` está nos parâmetros do kernel e que o `nvidia-open-dkms` foi compilado para o seu kernel atual (`dkms status`).
+
+**Portal não funciona (screenshots, Flatpak)**
+
+```bash
+systemctl --user restart xdg-desktop-portal xdg-desktop-portal-hyprland
+```
+
+**Waybar sumiu**  
+`SUPER + Escape` reinicia. Se não voltar: `killall waybar; waybar &`
+
+**awww: command not found**  
+Instale pelo AUR: `yay -S awww`
+
+**Sem som**
+
+```bash
+systemctl --user enable --now pipewire pipewire-pulse wireplumber
+```
