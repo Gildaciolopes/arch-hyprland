@@ -97,6 +97,70 @@ yay -S awww hyprshot ttf-apple-emoji
 
 ---
 
+## 3.1 Emojis da Apple
+
+Depois de instalar `ttf-apple-emoji`, configure o fontconfig para que **todos** os apps usem os emojis da Apple por padrão (sobrescrevendo Noto Emoji):
+
+```bash
+mkdir -p ~/.config/fontconfig
+```
+
+Crie `~/.config/fontconfig/fonts.conf`:
+
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+  <!-- Prefere Apple Color Emoji em qualquer pedido de "emoji" -->
+  <alias>
+    <family>emoji</family>
+    <prefer>
+      <family>Apple Color Emoji</family>
+    </prefer>
+  </alias>
+
+  <!-- Fallback para sans-serif, serif e monospace -->
+  <match target="pattern">
+    <test qual="any" name="family"><string>sans-serif</string></test>
+    <edit name="family" mode="append" binding="weak">
+      <string>Apple Color Emoji</string>
+    </edit>
+  </match>
+
+  <match target="pattern">
+    <test qual="any" name="family"><string>serif</string></test>
+    <edit name="family" mode="append" binding="weak">
+      <string>Apple Color Emoji</string>
+    </edit>
+  </match>
+
+  <match target="pattern">
+    <test qual="any" name="family"><string>monospace</string></test>
+    <edit name="family" mode="append" binding="weak">
+      <string>Apple Color Emoji</string>
+    </edit>
+  </match>
+
+  <!-- Substitui Noto Color Emoji pelo Apple quando os dois estão instalados -->
+  <match target="pattern">
+    <test qual="any" name="family"><string>Noto Color Emoji</string></test>
+    <edit name="family" mode="prepend" binding="strong">
+      <string>Apple Color Emoji</string>
+    </edit>
+  </match>
+</fontconfig>
+```
+
+Atualize o cache de fontes:
+
+```bash
+fc-cache -fv
+```
+
+> O `noto-fonts-emoji` continua instalado como fallback, mas o Apple Color Emoji tem prioridade em tudo.
+
+---
+
 ## 4. Driver NVIDIA
 
 ```bash
@@ -153,6 +217,42 @@ Edite `/etc/default/earlyoom`:
 ```
 EARLYOOM_ARGS="-r 3600 -n --avoid '(^|/)(init|systemd|Xorg|sshd)$'"
 ```
+
+### zram — swap comprimido na RAM
+
+O sistema usa **zram** como swap primário (prioridade 100) e um swapfile de 8 GB como secundário (prioridade -2). O zram comprime dados com `zstd` e ocupa metade da RAM disponível — resultado: sistema responde melhor sob pressão de memória sem precisar tocar o disco.
+
+Instale o gerador:
+
+```bash
+sudo pacman -S zram-generator
+```
+
+Crie `/etc/systemd/zram-generator.conf`:
+
+```ini
+[zram0]
+zram-size = ram / 2
+compression-algorithm = zstd
+```
+
+Ative:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start systemd-zram-setup@zram0.service
+```
+
+Verifique:
+
+```bash
+zramctl
+swapon --show
+```
+
+Deve aparecer `/dev/zram0` com prioridade 100 e seu swapfile com prioridade -2.
+
+> Importante: o kernel param `zswap.enabled=0` (configurado no GRUB) desativa o zswap para não conflitar com o zram. Os dois fazem coisas parecidas — usar os dois ao mesmo tempo desperdiça RAM.
 
 ### fstrim — saúde do SSD
 
