@@ -3,77 +3,77 @@
   "logo": {
     "color": {
       "1": "magenta",
-      "2": "magenta",
+      "2": "magenta"
     },
-    "source": "/home/fresh/.config/fastfetch/logo/a.txt",
+    "source": "/home/fresh/.config/fastfetch/logo/a.txt"
   },
   "display": {
-    "separator": " -> ",
-    "color": {
-      "separator": "1",
+       "separator": " -> ",
+       "color": {
+          "separator": "1"
+        }
     },
-  },
   "modules": [
     {
       "type": "title",
       "color": {
         "user": "magenta",
         "at": "magenta",
-        "host": "magenta",
-      },
+        "host": "magenta"
+      }
     },
     "separator",
-    {
-      "type": "custom",
-      "format": "{#keys}{#1}{#magenta}┌ Hardware",
-    },
-    {
-      "type": "host",
-      "key": "├ Model ",
-      "keyColor": "magenta",
-      "format": "{5} {2} {3}",
-    },
-    {
-      "type": "display",
-      "key": "├ Screen",
-      "keyColor": "magenta",
-      "format": "{1} x {2} px @ {3} Hz in {12}\" ({13} ppi) - {14} bit - HDR: {20} - {7}",
-    },
-    {
-      "type": "cpu",
-      "key": "├ CPU   ",
-      "keyColor": "magenta",
-      "format": "{1} - {5} core @ {7} - {8}",
-      "temp": true,
-    },
-    {
-      "type": "gpu",
-      "key": "├ GPU   ",
-      "keyColor": "magenta",
-      "format": "{2} - {5} core @ {12} - {4} - {11}",
-      "temp": true,
-    },
-    {
-      "type": "memory",
-      "key": "├ Memory",
-      "keyColor": "magenta",
-    },
-    {
-      "type": "disk",
-      "key": "├ Disk  ",
-      "keyColor": "magenta",
-      "format": "{10} - {1} / {2} ({3}) - {9}",
-    },
-    {
-      "type": "battery",
-      "key": "└ Charge",
-      "keyColor": "magenta",
-      "format": "{4} ({12} hours, {13} mins remaining) - {7} cycles - {6}",
-      "temp": true,
-      "percent": {
-        "green": 51,
-        "yellow": 11,
-      },
-    },
-  ],
+       {
+          "type": "custom",
+          "format": "{#keys}{#1}{#magenta}┌ Hardware"
+       },
+       {
+          "type": "host",
+          "key": "├ Model ",
+          "keyColor": "magenta",
+          "format": "{5} {2} {3}"
+       },
+       {
+          "type": "display",
+          "key": "├ Screen",
+          "keyColor": "magenta",
+          "format": "{1} x {2} px @ {3} Hz in {12}\" ({13} ppi) - {14} bit - HDR: {20} - {7}"
+       },
+       {
+          "type": "cpu",
+          "key": "├ CPU   ",
+          "keyColor": "magenta",
+          "format": "{1} - {5} core @ {7} - {8}",
+          "temp": true
+       },
+       {
+          "type": "gpu",
+          "key": "├ GPU   ",
+          "keyColor": "magenta",
+          "format": "{2} - {5} core @ {12} - {4} - {11}",
+          "temp": true
+       },
+       {
+          "type": "memory",
+          "key": "├ Memory",
+          "keyColor": "magenta"
+       },
+       {
+          "type": "disk",
+          "key": "├ Disk  ",
+          "keyColor": "magenta",
+          "format": "{10} - {1} / {2} ({3}) - {9}"
+        },
+        {
+          "type": "battery",
+          "key": "└ Charge",
+          "keyColor": "magenta",
+          "format": "{4} ({12} hours, {13} mins remaining) - {7} cycles - {6}",
+          "temp": true,
+          "percent": {
+             "green": 51,
+             "yellow": 11
+          }
+       }
+  ]
 }

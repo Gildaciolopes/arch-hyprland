@@ -1,0 +1,60 @@
+# Insere uma linha em branco entre os comandos
+add_newline = true
+
+# Define a ordem dos módulos e o formato de duas linhas
+# A primeira linha mostra o diretório e informações do git
+# A segunda linha é o prompt onde você digita
+format = """
+[╭─](bold #CBA6F7)$directory$git_branch$git_status$package
+[╰─](bold #CBA6F7)$character"""
+
+# -----------------------------------------------------------------
+# 1. Configuração do Diretório (Pasta atual)
+# -----------------------------------------------------------------
+[directory]
+style = "bold #FF79C6"  # Cor Magenta para o diretório
+truncation_length = 3   # Mostra apenas as 3 últimas pastas
+truncation_symbol = "…/"
+read_only = " 🔒"
+format = " [$path]($style)[$read_only]($read_only_style) "
+
+# -----------------------------------------------------------------
+# 2. Configuração do Git
+# -----------------------------------------------------------------
+[git_branch]
+symbol = " "
+style = "bold #BD93F9" # Cor Roxa para o branch
+format = "em [$symbol$branch]($style) "
+
+[git_status]
+style = "bold #FF79C6" # Cor Magenta para alterações no git
+format = '[$all_status$ahead_behind]($style) '
+conflicted = "🏳"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+up_to_date = "✓"
+untracked = "?"
+stashed = ""
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+# -----------------------------------------------------------------
+# 3. Configuração do Ícone do Sistema (Prompt final)
+# -----------------------------------------------------------------
+[character]
+# Ícone do Arch em Ciano (combina com a personagem) quando sucesso
+success_symbol = "[  ➜](bold #8BE9FD)"
+# Ícone em Magenta quando der erro
+error_symbol = "[ ✖ ➜](bold #FF79C6)"
+vimcmd_symbol = "[NORMAL](bold #BD93F9)"
+
+# -----------------------------------------------------------------
+# 4. Configuração de Pacotes (Ex: versão do Node, Rust, etc.)
+# -----------------------------------------------------------------
+[package]
+symbol = " "
+style = "bold #BD93F9"
+format = "is [$symbol$version]($style) "
