@@ -114,6 +114,7 @@ sudo pacman -S arc-gtk-theme nwg-look kvantum kvantum-qt5 qt5ct qt6ct
 ### Terminal extras (launched by Hyprland at startup)
 ```bash
 sudo pacman -S tty-clock cmatrix cava pipes.sh
+yay -S lavat   # lava-lamp terminal animation
 ```
 
 ### System tools
@@ -137,7 +138,7 @@ sudo pacman -S zip unzip unrar p7zip
 ### AUR helper
 ```bash
 # Install yay first, then use it for AUR packages
-yay -S awww hyprshot spicetify-cli
+yay -S awww hyprshot spicetify-cli lavat
 ```
 
 ---
@@ -232,5 +233,5 @@ sudo pacman -S nvidia-open-dkms linux-headers linux-lts-headers dkms libva-nvidi
 - **Power menu:** `⏻` button in Waybar calls `nwg-bar`. `SUPER+Escape` kills/restarts Waybar.
 - **Clipboard manager:** `cliphist` stores both text and images via `wl-paste` watchers.
 - **Touchpad:** `tap-to-click = yes`, `natural_scroll = no`.
-- **Terminal decorations at startup:** `tty-clock`, `cmatrix -C magenta`, and `cava` each open in a separate Kitty window on login (cava delayed 3 s to avoid race).
+- **Terminal decorations at startup:** `tty-clock`, `cmatrix -C magenta`, `cava`, and `lavat -c magenta` each open in a separate Kitty window on login (cava delayed 3 s, lavat delayed 5 s to avoid race).
 - **Spicetify:** Spotify theming via `spicetify-cli` — config lives in `~/.config/spicetify`.
