@@ -9,8 +9,8 @@ Dotfiles for an Arch Linux + Hyprland desktop environment. All files under `.con
 ## Applying changes to the live system
 
 ```bash
-# Hyprland
-cp .config/hypr/hyprland.conf ~/.config/hypr/hyprland.conf
+# Hyprland (Lua config, Hyprland >= 0.55 — hyprlang/.conf is deprecated)
+cp .config/hypr/hyprland.lua ~/.config/hypr/hyprland.lua
 hyprctl reload
 
 # Waybar
@@ -32,10 +32,11 @@ cp .config/fastfetch/config.jsonc ~/.config/fastfetch/config.jsonc
 
 | File | Purpose |
 |------|---------|
-| `.config/hypr/hyprland.conf` | Main Hyprland config: monitor, autostart, env vars, keybinds, window rules, look & feel |
+| `.config/hypr/hyprland.lua` | Main Hyprland config (Lua format, Hyprland >= 0.55): monitor, autostart, env vars, keybinds, window rules, look & feel |
 | `.config/waybar/config.jsonc` | Waybar module layout and per-module settings |
 | `.config/waybar/style.css` | Waybar CSS (island-style floating modules) |
 | `.config/kitty/kitty.conf` | Terminal colors, opacity, keymaps |
+| `.config/cava/config` | Cava audio visualizer settings (foreground = magenta, to match cmatrix/lavat startup terminals) |
 | `.config/starship.toml` | Two-line bash prompt with git branch/status |
 | `.config/wofi/config` | App launcher settings |
 | `.config/wofi/style.css` | Wofi styling |
